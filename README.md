@@ -1,6 +1,6 @@
 # Graph Vector Store
 
-Improved RAG using Graph databases and vector stores.
+Improved RAG using knowledge graphs and vector stores.
 
 ## Preface
 
@@ -36,3 +36,26 @@ To perform better queries, one trick we can perform is to refrase the question a
 Now we get embedding #2 or #3 depending on the model.
 
 \* Tested on Nomic Embed V1.5, MXBAI Embed Large V1 335M and Snowflake Arctic Embed 335M
+
+## Knowledge Graphs
+
+### Conceptual Understanding
+
+Knowledge graphs excell at linking entities with relationships, we can utilize a knowledge graph to factually describe how entities relate to each other which if provided to the prompt then we can provide more factual answers, for example consider this prompt:
+
+```
+Prompt:
+X is a child of Y; X is Z; X is similar to W;
+
+How does W relate to Y?
+
+llama3-70b:
+...
+W is probably a sibling or relative of Y.
+```
+
+Augmenting this small amount of information at the start provides some conceptual understanding of the entities considered despite the clear lack of any actual definition of them.
+
+Augmenting a prompt like this can largely improve the response of the prompt.
+
+###
