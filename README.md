@@ -8,7 +8,17 @@ To make AI work better, access to up-to-date information from diverse sources, i
 
 ## Vector Stores
 
-Vector stores work of embeddings which are supposed to capture the semantic essence of the prompt, this is quite error prone and fails very poorly in Q/A senarios. The embedding of a question is often far different that the embedding of text containing the answer, for example compare the following texts:
+Vector stores work of embeddings which are supposed to capture the semantic essence of the prompt, this is quite error prone and fails very poorly in Q/A senarios.
+
+### Chunking
+
+Chunk sizes are an important factor to consider when embedding text which needs to be tuned to your specific data and use case to provide better perfomance. When chunking one needs to consider if the information needed to be provided is typically contained in single sentences or paragraphs. If you have content that takes paragraphs to explain complex concepts then you will find that small chunk sizes will cause halucinations and generally go in the wrong direction. Alternatively if large chunk sizes are used and small facts are queried then you end up two potential problems, first is that it returns more garabge text and has a "needle in a haystack" problem in the result; the second problem is that if there are many facts related to prompt that are in different sections of the text then you have less of them returned.
+
+To properly tune this chunk size parameter you need a specific use case, data and resources to create the metrics for it. This can be fustrating when you have a general use case and somewhat arbitrary data to query over, in this case I would lean toward larger chunk sizes.
+
+### Questions/Answers Prompting
+
+The embedding of a question is often far different that the embedding of text containing the answer, for example compare the following texts:
 
 - (Query) What is X?
 - (Embedding #1) What is Y?
