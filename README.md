@@ -4,7 +4,7 @@ Improved RAG using knowledge graphs and vector stores.
 
 ## Preface
 
-To make AI work better, access to up-to-date information from diverse sources, including private ones currently absent from training data, is essential. Until long context windows can be properly handled, techniques like Retrieval-Augmented Generation (RAG) are necessary. Unfortunately, vector stores, advertised as a magic solution, have fallen short of expectations in practice. Therefore, significantly improving basic RAG methods is crucial to make them useful.
+To make open source LLM models work better, access to up-to-date information from diverse sources, including private ones currently absent from training data, is essential. Until long context windows can be properly handled, techniques like Retrieval-Augmented Generation (RAG) are necessary. Unfortunately, vector stores, advertised as a magic solution, have fallen short of expectations in practice. Therefore, significantly improving basic RAG methods is crucial to make them useful.
 
 ## Vector Stores
 
@@ -58,4 +58,8 @@ Augmenting this small amount of information at the start provides some conceptua
 
 Augmenting a prompt like this can largely improve the response of the prompt.
 
-###
+### Entity Extraction
+
+Knowledge graphs can get very large quite quickly and manually forming one from text is labor intensive, however we can use a large language model to extract entities from text along with the relationships to automate the creation of a knowledge graph. We can prompt the model to follow a specific structure and parse the response to create entities and relationships in a graph database. This requires a large model that is "intelligent" enough to extract them in the proper format - I have found that llama3 70b meets the necessary requirements.
+
+When extracting entities one needs to once again consider the chunk sizes of the text it is extracting from, too large and the models tend to forget the formatting instructions or fail to perform a comprehensive extraction; if the chunks are too small the models can get overly specific on the extraction.
