@@ -71,3 +71,20 @@ One of the issues with entity extraction is that sometimes the same entities can
 One option I have tried is to search for similar nodes and get the LLM to check if one of the existing nodes is refering to the same thing, this turned out to have more problems than it help solve - it wasn't always successful in finding the right node to reuse and sometimes it would halucinate and cause corruption in my graph. This might be more doable with "smarter" LLMs but at the moment it is too difficult to handle properly.
 
 The solution I arrived at was to not worry too much about graph sanity but embed each node and relationship into a vector store and get a group of related nodes when querying - this allows us to get not only the nodes directly referenced but other similar nodes in the graph to get more complete search.
+
+## The Process
+
+### Knowledge Processing
+
+The first thing we need to have our knowledge processed, this involves to separate processes - embedding and graphing. The embedding stage is the typical process of chunking and embedding into a vector store using your favourite embedding model. The graphing state invloves chunking the text, performing entity extraction on those chunks then adding those extracted entities and relationships to both a graph database and a vector store (different from the ebedding vector store).
+
+### Querying
+
+Once we have some knowledge processed we have a series of steps to take to perform a good query over our data:
+
+1. Perform entity extraction on the prompt.
+2. Search our graph vector store for the extracted entities.
+3. For each of the found entities search the graph and get the relationships with the highest strengths.
+4. Feed the found entities and relationships to the LLM and get it to generate a paragraph (or sentence(s) if your chunk size is smaller) using the entities and relationships; instruct the model to make stuff up (educated halucination) if it doesn't have knowledge on the entities and relationships it is fed.
+5. Take that generated paragraph and search the embedding vector store.
+6. Feed the vector store chunks and entity/relationship information to the LLM with the original prompt for answer generation.
