@@ -74,7 +74,9 @@ One of the issues with entity extraction is that sometimes the same entities can
 
 One option I have tried is to search for similar nodes and get the LLM to check if one of the existing nodes is refering to the same thing, this turned out to have more problems than it help solve - it wasn't always successful in finding the right node to reuse and sometimes it would halucinate and cause corruption in my graph. This might be more doable with "smarter" LLMs but at the moment it is too difficult to handle properly.
 
-The solution I arrived at was to not worry too much about graph sanity but embed each node and relationship into a vector store and get a group of related nodes when querying - this allows us to get not only the nodes directly referenced but other similar nodes in the graph to get more complete search.
+The solution I arrived at was to not worry too much about graph sanity but embed* each node and relationship into a vector store and get a group of related nodes when querying - this allows us to get not only the nodes directly referenced but other similar nodes in the graph to get more complete search.
+
+\* You will need to use an embedding model that distributes different entities well while being fairly good at clustering like entities.
 
 ## The Process
 
