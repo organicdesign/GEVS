@@ -63,3 +63,11 @@ Augmenting a prompt like this can largely improve the response of the prompt.
 Knowledge graphs can get very large quite quickly and manually forming one from text is labor intensive, however we can use a large language model to extract entities from text along with the relationships to automate the creation of a knowledge graph. We can prompt the model to follow a specific structure and parse the response to create entities and relationships in a graph database. This requires a large model that is "intelligent" enough to extract them in the proper format - I have found that llama3 70b meets the necessary requirements.
 
 When extracting entities one needs to once again consider the chunk sizes of the text it is extracting from, too large and the models tend to forget the formatting instructions or fail to perform a comprehensive extraction; if the chunks are too small the models can get overly specific on the extraction.
+
+### Graph Sanity
+
+One of the issues with entity extraction is that sometimes the same entities can be refered to by different names such as "Arthur Koestler" and "Koestler". This can cause problems with the graph since we now have two different nodes for the same identity; this means if we query the graph for "Koestler" we are missing out on the relationships & information associated with the node "Arthur Koestler" and vice verca.
+
+One option I have tried is to search for similar nodes and get the LLM to check if one of the existing nodes is refering to the same thing, this turned out to have more problems than it help solve - it wasn't always successful in finding the right node to reuse and sometimes it would halucinate and cause corruption in my graph. This might be more doable with "smarter" LLMs but at the moment it is too difficult to handle properly.
+
+The solution I arrived at was to not worry too much about graph sanity but embed each node and relationship into a vector store and get a group of related nodes when querying - this allows us to get not only the nodes directly referenced but other similar nodes in the graph to get more complete search.
