@@ -107,7 +107,7 @@ Once we have some knowledge processed we have a series of steps to take to perfo
 1. Perform entity extraction on the prompt.
 2. Search our graph vector store for the extracted entities.
 3. For each of the found entities search the graph and get the relationships with the highest strengths - each strength being the harmonic mean calculated from the emphasis values.
-4. Feed the found entities and relationships to the LLM and get it to generate a paragraph (or sentence(s) if your chunk size is smaller) using the entities and relationships; instruct the model to make stuff up (educated halucination) if it doesn't have knowledge on the entities and relationships it is fed.
+4. Feed the found entities and relationships to the LLM and get it to generate a paragraph (or sentence(s) if your chunk size is smaller) using the entities and relationships; instruct the model to make stuff up (educated halucination) if it doesn't have knowledge on the entities and relationships it is fed. Note that the accuracy of the generated paragraph isn't very important here only that we end up with something looking like the chunk we are searching, generating it from factual entities and relationships helps greatly with the accuracy of the search in the next step.
 5. Take that generated paragraph and search the embedding vector store.
 6. Feed the vector store chunks and entity/relationship information to the LLM with the original prompt for answer generation.
 
