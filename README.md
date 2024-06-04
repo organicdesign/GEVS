@@ -21,9 +21,9 @@ To properly tune this chunk size parameter you need a specific use case, data an
 The embedding of a question is often far different that the embedding of text containing the answer, for example compare the following texts:
 
 - (Query) What is X?
-- (Embedding #1) What is Y?
-- (Embedding #2) X is equal to Z.
-- (Embedding #3) X is similar to W.
+- (Embedding \#1) What is Y?
+- (Embedding \#2) X is equal to Z.
+- (Embedding \#3) X is similar to W.
 
 The first embedding holds closer semantic simularity* to the query than the others despite the second one holding the information needed to answer the query and the third holding relevant information.
 
@@ -33,7 +33,7 @@ To perform better queries, one trick we can perform is to refrase the question a
 
 - (Query) X is a
 
-Now we get embedding #2 or #3 depending on the model.
+Now we get embedding \#2 or \#3 depending on the model.
 
 \* Tested on Nomic Embed V1.5, MXBAI Embed Large V1 335M and Snowflake Arctic Embed 335M
 
