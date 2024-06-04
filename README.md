@@ -2,6 +2,22 @@
 
 Improved RAG using knowledge graphs and vector stores.
 
+## Table of Contents
+
+- [Preface](#preface)
+- [Vector Stores](#vector-stores)
+  - [Chunking](#chunking)
+  - [Questions/Answers Prompting](#questions-answers-prompting)
+- [Knowledge Graphs](#knowledge-graphs)
+  - [Conceptual Understanding](#conceptual-understanding)
+  - [Entity Extraction](#entity-extraction)
+  - [Weighting Entities](#weighting-entities)
+  - [Graph Sanity](#graph-sanity)
+- [The Process](#the-process)
+  - [Knowledge Processing](#knowledge-processing)
+  - [Querying](#querying)
+- [Long Context Windows](#long-context-windows)
+
 ## Preface
 
 To make open source LLM models work better, access to up-to-date information from diverse sources, including private ones currently absent from training data, is essential. Until long context windows can be properly handled, techniques like Retrieval-Augmented Generation (RAG) are necessary. Unfortunately, vector stores, advertised as a magic solution, have fallen short of expectations in practice. Therefore, significantly improving basic RAG methods is crucial to make them useful.
