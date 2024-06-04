@@ -94,3 +94,11 @@ Once we have some knowledge processed we have a series of steps to take to perfo
 4. Feed the found entities and relationships to the LLM and get it to generate a paragraph (or sentence(s) if your chunk size is smaller) using the entities and relationships; instruct the model to make stuff up (educated halucination) if it doesn't have knowledge on the entities and relationships it is fed.
 5. Take that generated paragraph and search the embedding vector store.
 6. Feed the vector store chunks and entity/relationship information to the LLM with the original prompt for answer generation.
+
+## Long Context Windows
+
+In the future we might have access to very long context windows that can hold our entire knowledge base, in which case RAG (and this method) would become redundant.
+
+You might wonder how long context windows could ever efficiently be loaded from a large knowledge base since the model would still have to load and process the data which could take a lot of processing power meaning something like RAG would still be needed to filter the data to reduce processing time/space. I think the way to look at long context windows is to think of them as a database that persists to disk - you no longer need to fetch your data and store it in a vector store or graph database, you just have the model process it and save the context window to disk. The only processing time needed would be to load the context into memory along with the model which doesn't take too long. In time this processing time will reduce due to better hardware and better algorithims.
+
+Until long context windows have reached a desirable state and are accessable we need a process such as the one described in this document that allows for access to a larger knowledge base.
