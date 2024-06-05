@@ -19,6 +19,7 @@ interface Relationship {
 
 const Neo4jNode = z.object({
   properties: z.object({
+    name: z.string(),
     count: z.number().optional().default(0),
     harmonic: z.number().optional().default(0)
   }),
@@ -62,7 +63,7 @@ const escape = (input: string): string => {
   return output
 }
 
-export const neo4jParser = async function * (driver: Driver, vectorstore: VectorStoreInterface, entityStream: AsyncIterable<Entity | Relationship>): AsyncGenerator<Neo4jNode | Neo4jRelationship> {
+export const neo4jParser = async function * (driver: Driver, vectorstore: VectorStoreInterface, entityStream: AsyncIterable<Entity | Relationship>): AsyncGenerator<({ is: 'entity' } & Neo4jNode) | ({ is: 'relationship' } & Neo4jRelationship)> {
   for await (const item of entityStream) {
     const session = driver.session({ defaultAccessMode: 'WRITE' })
 
@@ -114,13 +115,16 @@ export const neo4jParser = async function * (driver: Driver, vectorstore: Vector
     }
 
     if (item.is === 'entity') {
-      yield Neo4jNode.parse(obj.n)
+      yield { is: 'entity', ...Neo4jNode.parse(obj.n) }
     } else {
-      yield Neo4jRelationship.parse({
-        from: obj.a,
-        to: obj.b,
-        ...obj.n
-      })
+      yield {
+        is: 'relationship',
+        ...Neo4jRelationship.parse({
+          from: obj.a,
+          to: obj.b,
+          ...obj.n
+        })
+      }
     }
   }
 }
