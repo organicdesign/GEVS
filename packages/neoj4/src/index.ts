@@ -40,6 +40,14 @@ const Neo4jRelationship = z.object({
   type: z.string()
 })
 
+const VectorStoreItem = z.object({
+  pageContent: z.string(),
+  metadata: z.object({
+    id: z.string(),
+    type: z.union([z.literal('entity'), z.literal('relationship')])
+  })
+})
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type Neo4jRelationship = z.output<typeof Neo4jRelationship>
 
@@ -95,7 +103,7 @@ export const neo4jParser = async function * (driver: Driver, vectorstore: Vector
 
       const doc = {
         pageContent: name,
-        metadata: { type: item.is }
+        metadata: { type: item.is, id: escape(name) }
       }
 
       await vectorstore.addDocuments([doc], { ids: [escape(name)] })
@@ -114,5 +122,58 @@ export const neo4jParser = async function * (driver: Driver, vectorstore: Vector
         ...obj.n
       })
     }
+  }
+}
+
+const getRelationships = async (driver: Driver, name: string): Promise<Neo4jRelationship[]> => {
+  const session = driver.session({ defaultAccessMode: 'READ' })
+
+  const r = await session.run(`MATCH (a { name: "${name}" })-[n]-(b) RETURN a, n, b;`)
+
+  await session.close()
+
+  return r.records.map(r => {
+    const obj = r.toObject()
+
+    if (obj.a.identity !== obj.n.start) {
+      [obj.a, obj.b] = [obj.b, obj.a]
+    }
+
+    return Neo4jRelationship.parse({
+      from: obj.a,
+      to: obj.b,
+      ...obj.n
+    })
+  })
+}
+
+export const sortRelationships = (a: Neo4jRelationship, b: Neo4jRelationship): number => {
+  const aHarmonics = [a.from, a, a.to].map(k => Number(k.properties.count) / Number(k.properties.harmonic))
+  const bHarmonics = [b.from, b, b.to].map(k => Number(k.properties.count) / Number(k.properties.harmonic))
+
+  const aHarmonic = aHarmonics.reduce((a, c) => a + c, 0) / 3
+  const bHarmonic = bHarmonics.reduce((a, c) => a + c, 0) / 3
+
+  return bHarmonic - aHarmonic
+}
+
+export const neo4jReader = async function * (driver: Driver, vectorstore: VectorStoreInterface, entityStream: AsyncIterable<Entity | Relationship>, options: Partial<{ limit: number }> = {}): AsyncGenerator<Neo4jRelationship, void, undefined> {
+  for await (const item of entityStream) {
+    if (item.is === 'relationship') {
+      continue
+    }
+
+    const vectorstoreResults = await vectorstore.similaritySearch(item.name, 5)
+
+    const parsedResults = vectorstoreResults
+      .map(r => VectorStoreItem.parse(r))
+      .filter(r => r.metadata.type === 'entity')
+
+    const relationships = await Promise.all(parsedResults.map(async r => getRelationships(driver, r.metadata.id)))
+
+    yield * relationships
+      .reduce((a, c) => [...a, ...c], [])
+      .sort(sortRelationships)
+      .slice(0, options.limit ?? 10)
   }
 }
