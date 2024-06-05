@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import type { VectorStoreInterface } from '@langchain/core/vectorstores'
 import type { Driver } from 'neo4j-driver'
 
 interface Entity {
@@ -53,7 +54,7 @@ const escape = (input: string): string => {
   return output
 }
 
-export const neo4jParser = async function * (driver: Driver, entityStream: AsyncIterable<Entity | Relationship>): AsyncGenerator<Neo4jNode | Neo4jRelationship> {
+export const neo4jParser = async function * (driver: Driver, vectorstore: VectorStoreInterface, entityStream: AsyncIterable<Entity | Relationship>): AsyncGenerator<Neo4jNode | Neo4jRelationship> {
   for await (const item of entityStream) {
     const session = driver.session({ defaultAccessMode: 'WRITE' })
 
@@ -87,6 +88,22 @@ export const neo4jParser = async function * (driver: Driver, entityStream: Async
     const obj = r.records[0].toObject()
 
     await session.close()
+
+    // Update the vectorstore.
+    try {
+      const name = item.is === 'entity' ? item.name : item.type
+
+      const doc = {
+        pageContent: name,
+        metadata: { type: item.is }
+      }
+
+      await vectorstore.addDocuments([doc], { ids: [escape(name)] })
+    } catch (error) {
+      if (error instanceof Error && !error.message.startsWith('Expected IDs to be unique')) {
+        throw error
+      }
+    }
 
     if (item.is === 'entity') {
       yield Neo4jNode.parse(obj.n)
