@@ -25,6 +25,7 @@
     "@langchain/community": "^0.2.6",
     "@organicdesign/gvs-langchain": "^0.1.0",
     "@organicdesign/gvs-neo4j": "^0.1.0",
-    "langchain": "^0.2.3"
+    "langchain": "^0.2.3",
+    "streaming-iterables": "^8.0.1"
   }
 }
