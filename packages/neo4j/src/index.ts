@@ -161,7 +161,7 @@ export const sortRelationships = (a: Neo4jRelationship, b: Neo4jRelationship): n
   return bHarmonic - aHarmonic
 }
 
-export const neo4jReader = async function * (driver: Driver, vectorstore: VectorStoreInterface, entityStream: AsyncIterable<Entity | Relationship>, options: Partial<{ limit: number }> = {}): AsyncGenerator<Neo4jRelationship, void, undefined> {
+export const neo4jReader = async function * (driver: Driver, vectorstore: VectorStoreInterface, entityStream: AsyncIterable<Entity | Relationship>, options: Partial<{ limit: number }> = {}): AsyncGenerator<Neo4jRelationship[], void, undefined> {
   for await (const item of entityStream) {
     if (item.is === 'relationship') {
       continue
@@ -175,7 +175,7 @@ export const neo4jReader = async function * (driver: Driver, vectorstore: Vector
 
     const relationships = await Promise.all(parsedResults.map(async r => getRelationships(driver, r.metadata.id)))
 
-    yield * relationships
+    yield relationships
       .reduce((a, c) => [...a, ...c], [])
       .sort(sortRelationships)
       .slice(0, options.limit ?? 10)
