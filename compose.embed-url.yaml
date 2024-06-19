@@ -1,0 +1,25 @@
+services:
+  embed-url:
+    build:
+      context: .
+      dockerfile: docker/event-manager/Dockerfile
+    extends:
+      file: compose.base.yaml
+      service: base
+    env_file: .env
+    environment:
+      - CHROMA_HOST=chroma
+      - NEO4J_HOST=neo4j
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - chroma
+      - neo4j
+
+networks:
+  chroma:
+    external: true
+    name: gvs-chroma
+  neo4j:
+    external: true
+    name: gvs-neo4j

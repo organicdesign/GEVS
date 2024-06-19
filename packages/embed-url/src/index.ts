@@ -10,12 +10,13 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
 import neo4j from 'neo4j-driver'
 import stripTags from 'striptags'
 
-const url = process.argv[2]
-
 assert(process.env.OLLAMA_TEMPERATURE)
 assert(process.env.OLLAMA_DIMENTIONS)
 assert(process.env.NEO4J_ADMIN_PASSWORD)
-assert(url)
+
+if (process.env.URL == null) {
+  throw new Error('Missing URL environment variable.')
+}
 
 const model = new ChatOllama({
   baseUrl: `http://${process.env.OLLAMA_HOST}:${process.env.OLLAMA_PORT}`,
@@ -52,9 +53,9 @@ const knowledgeGraphVectorStore = await Chroma.fromExistingCollection(
 
 const driver = neo4j.driver(`neo4j://${process.env.NEO4J_HOST}`, neo4j.auth.basic('neo4j', process.env.NEO4J_ADMIN_PASSWORD))
 
-const req = await fetch(url).then(async r => r.text())
+const req = await fetch(process.env.URL).then(async r => r.text())
 const content = stripTags(req)
-const entityExtractor = new EntityExtractor(model, url)
+const entityExtractor = new EntityExtractor(model, process.env.URL)
 
 const streamToIterator = async function * <T>(stream: IterableReadableStream<T[]>): AsyncGenerator<T, void, undefined> {
   for await (const items of stream) {
