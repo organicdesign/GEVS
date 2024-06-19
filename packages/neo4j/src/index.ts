@@ -63,7 +63,13 @@ const escape = (input: string): string => {
   return output
 }
 
-const toNumber = (input: Integer | number): number => typeof input === 'number' ? input : input.toNumber()
+const toNumber = (input: Integer | number | undefined): number | undefined => {
+  if (input == null) {
+    return undefined
+  }
+
+  return typeof input === 'number' ? input : input.toNumber()
+}
 
 export const neo4jParser = async function * (driver: Driver, vectorstore: VectorStoreInterface, entityStream: AsyncIterable<Entity | Relationship>): AsyncGenerator<({ is: 'entity' } & Neo4jNode) | ({ is: 'relationship' } & Neo4jRelationship)> {
   for await (const item of entityStream) {
