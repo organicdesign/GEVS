@@ -2,7 +2,7 @@ services:
   embed-url:
     build:
       context: .
-      dockerfile: docker/event-manager/Dockerfile
+      dockerfile: docker/embed-url.Dockerfile
     extends:
       file: compose.base.yaml
       service: base
