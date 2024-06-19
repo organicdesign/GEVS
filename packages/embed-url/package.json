@@ -1,0 +1,33 @@
+{
+  "type": "module",
+  "name": "@organicdesign/gvs-embed-url",
+  "version": "0.1.0",
+  "description": ".",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist/src"
+  ],
+  "scripts": {
+    "clean": "aegir clean",
+    "lint": "aegir lint",
+    "dep-check": "aegir dep-check",
+    "prepublishOnly": "npm run build",
+    "build": "aegir build"
+  },
+  "author": "Saul Boyd",
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "aegir": "^42.2.4"
+  },
+  "private": true,
+  "dependencies": {
+    "@langchain/community": "^0.2.6",
+    "@langchain/core": "^0.2.7",
+    "@organicdesign/gvs-langchain": "^0.1.0",
+    "@organicdesign/gvs-neo4j": "^0.1.0",
+    "langchain": "^0.2.3",
+    "neo4j-driver": "^5.21.0",
+    "striptags": "^3.2.0"
+  }
+}
