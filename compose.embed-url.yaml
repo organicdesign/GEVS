@@ -10,6 +10,7 @@ services:
     environment:
       - CHROMA_HOST=chroma
       - NEO4J_HOST=neo4j
+      - OLLAMA_HOST=host.docker.internal
       - URL=${URL}
     extra_hosts:
       - host.docker.internal:host-gateway
