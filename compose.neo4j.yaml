@@ -1,8 +1,6 @@
 services:
   neo4j:
-    build:
-      context: .
-      dockerfile: docker/neo4j/Dockerfile
+    image: neo4j:5
     extends:
       file: compose.base.yaml
       service: base
