@@ -115,8 +115,17 @@ export const neo4jParser = async function * (driver: Driver, vectorstore: Vector
     }
 
     if (item.is === 'entity') {
+      obj.n.properties.count = obj.n.properties.count.toNumber()
+      obj.n.properties.harmonic = obj.n.properties.harmonic.toNumber()
+
       yield { is: 'entity', ...Neo4jNode.parse(obj.n) }
     } else {
+      obj.n.properties.emphasis = obj.n.properties.emphasis.toNumber()
+      obj.a.properties.count = obj.a.properties.count.toNumber()
+      obj.a.properties.harmonic = obj.a.properties.harmonic.toNumber()
+      obj.b.properties.count = obj.b.properties.count.toNumber()
+      obj.b.properties.harmonic = obj.b.properties.harmonic.toNumber()
+
       yield {
         is: 'relationship',
         ...Neo4jRelationship.parse({
