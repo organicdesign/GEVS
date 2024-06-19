@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import type { VectorStoreInterface } from '@langchain/core/vectorstores'
-import type { Driver } from 'neo4j-driver'
+import type { Driver, Integer } from 'neo4j-driver'
 
 interface Entity {
   is: 'entity'
@@ -63,6 +63,8 @@ const escape = (input: string): string => {
   return output
 }
 
+const toNumber = (input: Integer | number): number => typeof input === 'number' ? input : input.toNumber()
+
 export const neo4jParser = async function * (driver: Driver, vectorstore: VectorStoreInterface, entityStream: AsyncIterable<Entity | Relationship>): AsyncGenerator<({ is: 'entity' } & Neo4jNode) | ({ is: 'relationship' } & Neo4jRelationship)> {
   for await (const item of entityStream) {
     const session = driver.session({ defaultAccessMode: 'WRITE' })
@@ -115,17 +117,17 @@ export const neo4jParser = async function * (driver: Driver, vectorstore: Vector
     }
 
     if (item.is === 'entity') {
-      obj.n.properties.count = obj.n.properties.count.toNumber()
-      obj.n.properties.harmonic = obj.n.properties.harmonic.toNumber()
+      obj.n.properties.count = toNumber(obj.n.properties.count)
+      obj.n.properties.harmonic = toNumber(obj.n.properties.harmonic)
 
       yield { is: 'entity', ...Neo4jNode.parse(obj.n) }
     } else {
-      obj.n.properties.count = obj.n.properties.count.toNumber()
-      obj.n.properties.harmonic = obj.n.properties.harmonic.toNumber()
-      obj.a.properties.count = obj.a.properties.count.toNumber()
-      obj.a.properties.harmonic = obj.a.properties.harmonic.toNumber()
-      obj.b.properties.count = obj.b.properties.count.toNumber()
-      obj.b.properties.harmonic = obj.b.properties.harmonic.toNumber()
+      obj.n.properties.count = toNumber(obj.n.properties.count)
+      obj.n.properties.harmonic = toNumber(obj.n.properties.harmonic)
+      obj.a.properties.count = toNumber(obj.a.properties.count)
+      obj.a.properties.harmonic = toNumber(obj.a.properties.harmonic)
+      obj.b.properties.count = toNumber(obj.b.properties.count)
+      obj.b.properties.harmonic = toNumber(obj.b.properties.harmonic)
 
       yield {
         is: 'relationship',
