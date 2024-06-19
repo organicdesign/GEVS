@@ -1,0 +1,23 @@
+services:
+  chroma:
+    build:
+      context: .
+      dockerfile: docker/chroma/Dockerfile
+    extends:
+      file: compose.base.yaml
+      service: base
+    ports:
+      - ${CHROMA_PORT}:8000
+    volumes:
+      - ./data/chroma:/chroma/chroma
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:${CHROMA_PORT}/api/v1/heartbeat" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - chroma
+
+networks:
+  chroma:
+    name: gvs-chroma

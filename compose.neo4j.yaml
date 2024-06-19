@@ -1,0 +1,21 @@
+services:
+  neo4j:
+    build:
+      context: .
+      dockerfile: docker/neo4j/Dockerfile
+    extends:
+      file: compose.base.yaml
+      service: base
+    ports:
+      - 7474:7474
+      - 7687:7687
+    environment:
+      - NEO4J_AUTH=neo4j/${NEO4J_ADMIN_PASSWORD}
+    volumes:
+      - ./data/neo4j:/data
+    networks:
+      - neo4j
+
+networks:
+  neo4j:
+    name: gvs-neo4j
