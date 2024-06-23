@@ -27,7 +27,7 @@ This document has instuctions for running the provided examples and explanations
 
 ## Getting Started
 
-I have added a couple examples on how to use this system to make it easier to understand and get started with. The examples require docker to run.
+I have added a couple examples on how to use this system to make it easier to understand and get started with. The examples require docker to run. You can configure the models and parameters used in the examples by editing the `.env` file.
 
 First you will need to start Chroma and Neo4j:
 
