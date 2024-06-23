@@ -30,10 +30,10 @@ Use the documents as up-to-date information on the prompt. If the prompt require
 
 You will always respond with a answer similar to a human that is in direct response to the prompt. You MUST always respond to the prompt.
 
-You will always follow prompts instructions or prompts and respond accordingly.
+You will always follow the prompt's instructions and respond accordingly.
 
 Prompt:
-`
+{prompt}`
 
 export const queryPrompt = ChatPromptTemplate.fromMessages([
   ['human', queryTemplate]
@@ -45,7 +45,7 @@ interface Relationship {
   to: string
 }
 
-export class Query extends Runnable<{ documents: DocumentInterface[], relationships: Relationship[] }, string> {
+export class Query extends Runnable<{ prompt: string, documents: DocumentInterface[], relationships: Relationship[] }, string> {
   static lc_name (): string {
     return 'ParagraphGenerator'
   }
@@ -59,7 +59,7 @@ export class Query extends Runnable<{ documents: DocumentInterface[], relationsh
     this.model = model
   }
 
-  async invoke (input: { documents: DocumentInterface[], relationships: Relationship[] }): Promise<string> {
+  async invoke (input: { prompt: string, documents: DocumentInterface[], relationships: Relationship[] }): Promise<string> {
     const relationships = input.relationships
       .map(({ from, to, type }) => `${from} ${type} ${to};`)
       .join('\n')
@@ -71,6 +71,6 @@ export class Query extends Runnable<{ documents: DocumentInterface[], relationsh
     return queryPrompt
       .pipe(this.model)
       .pipe(new StringOutputParser())
-      .invoke({ relationships, documents })
+      .invoke({ prompt, relationships, documents })
   }
 }

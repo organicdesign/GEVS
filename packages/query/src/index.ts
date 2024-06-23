@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import assert from 'assert/strict'
 import { ChatOllama } from '@langchain/community/chat_models/ollama'
 import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama'
 import { Chroma } from '@langchain/community/vectorstores/chroma'
@@ -7,7 +8,6 @@ import { EntityExtractor, ParagraphGenerator, Query } from '@organicdesign/gvs-l
 import { neo4jReader } from '@organicdesign/gvs-neo4j'
 import neo4j from 'neo4j-driver'
 import { collect, merge, take } from 'streaming-iterables'
-import assert from 'assert/strict'
 
 assert(process.env.OLLAMA_TEMPERATURE)
 assert(process.env.OLLAMA_DIMENTIONS)
@@ -83,7 +83,7 @@ const paragraph = await paragraphGenerator.invoke(relationships)
 const documents = await vectorStore.similaritySearch(paragraph, 16)
 
 // Get the model to answer the query with the document and relationship info.
-const output = await query.invoke({ documents, relationships })
+const output = await query.invoke({ prompt: process.env.QUERY, documents, relationships })
 
 console.log(output)
 
