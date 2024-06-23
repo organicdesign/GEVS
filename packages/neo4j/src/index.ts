@@ -2,6 +2,8 @@ import { z } from 'zod'
 import type { VectorStoreInterface } from '@langchain/core/vectorstores'
 import type { Driver, Integer } from 'neo4j-driver'
 
+type Neo4jNumber = Integer | number | undefined
+
 interface Entity {
   is: 'entity'
   name: string
@@ -63,12 +65,17 @@ const escape = (input: string): string => {
   return output
 }
 
-const toNumber = (input: Integer | number | undefined): number | undefined => {
+const toNumber = (input: Neo4jNumber): number | undefined => {
   if (input == null) {
     return undefined
   }
 
   return typeof input === 'number' ? input : input.toNumber()
+}
+
+const convertProperties = ({ properties }: { properties: { count: Neo4jNumber, harmonic: Neo4jNumber } }): void => {
+  properties.count = toNumber(properties.count)
+  properties.harmonic = toNumber(properties.harmonic)
 }
 
 export const neo4jParser = async function * (driver: Driver, vectorstore: VectorStoreInterface, entityStream: AsyncIterable<Entity | Relationship>): AsyncGenerator<({ is: 'entity' } & Neo4jNode) | ({ is: 'relationship' } & Neo4jRelationship)> {
@@ -122,19 +129,11 @@ export const neo4jParser = async function * (driver: Driver, vectorstore: Vector
       }
     }
 
-    if (item.is === 'entity') {
-      obj.n.properties.count = toNumber(obj.n.properties.count)
-      obj.n.properties.harmonic = toNumber(obj.n.properties.harmonic)
+    Object.values(obj).map(convertProperties)
 
+    if (item.is === 'entity') {
       yield { is: 'entity', ...Neo4jNode.parse(obj.n) }
     } else {
-      obj.n.properties.count = toNumber(obj.n.properties.count)
-      obj.n.properties.harmonic = toNumber(obj.n.properties.harmonic)
-      obj.a.properties.count = toNumber(obj.a.properties.count)
-      obj.a.properties.harmonic = toNumber(obj.a.properties.harmonic)
-      obj.b.properties.count = toNumber(obj.b.properties.count)
-      obj.b.properties.harmonic = toNumber(obj.b.properties.harmonic)
-
       yield {
         is: 'relationship',
         ...Neo4jRelationship.parse({
@@ -160,6 +159,8 @@ const getRelationships = async (driver: Driver, name: string): Promise<Neo4jRela
     if (obj.a.identity !== obj.n.start) {
       [obj.a, obj.b] = [obj.b, obj.a]
     }
+
+    Object.values(obj).map(convertProperties)
 
     return Neo4jRelationship.parse({
       from: obj.a,
