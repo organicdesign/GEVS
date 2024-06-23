@@ -71,6 +71,6 @@ export class Query extends Runnable<{ prompt: string, documents: DocumentInterfa
     return queryPrompt
       .pipe(this.model)
       .pipe(new StringOutputParser())
-      .invoke({ prompt, relationships, documents })
+      .invoke({ prompt: input.prompt, relationships, documents })
   }
 }
