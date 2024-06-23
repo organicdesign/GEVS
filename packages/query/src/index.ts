@@ -86,3 +86,5 @@ const documents = await vectorStore.similaritySearch(paragraph, 16)
 const output = await query.invoke({ documents, relationships })
 
 console.log(output)
+
+await driver.close()

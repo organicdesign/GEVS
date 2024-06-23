@@ -88,3 +88,7 @@ for await (const chunk of await graphSplitter.splitText(content)) {
     }
   }
 }
+
+console.log('Completed!')
+
+await driver.close()
