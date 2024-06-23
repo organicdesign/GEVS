@@ -1,10 +1,11 @@
-# Graph Vector Store
+# Graph Enhanced Vector Store
 
-Improved RAG using knowledge graphs and vector stores.
+Graph enhanced vector store for RAG using knowledge graphs and vector stores.
 
 ## Table of Contents
 
 - [Preface](#preface)
+- [Getting Started](#getting-started)
 - [Vector Stores](#vector-stores)
   - [Chunking](#chunking)
   - [Questions/Answers Prompting](#questions-answers-prompting)
@@ -21,6 +22,32 @@ Improved RAG using knowledge graphs and vector stores.
 ## Preface
 
 To make open source LLM models work better, access to up-to-date information from diverse sources, including private ones currently absent from training data, is essential. Until long context windows can be properly handled, techniques like Retrieval-Augmented Generation (RAG) are necessary. Unfortunately, vector stores, advertised as a magic solution, have fallen short of expectations in practice. Therefore, significantly improving basic RAG methods is crucial to make them useful.
+
+This document has instuctions for running the provided examples and explanations on how the graph enhanced vector store works and why it produces better results.
+
+## Getting Started
+
+I have added a couple examples on how to use this system to make it easier to understand and get started with. The examples require docker to run.
+
+First you will need to start Chroma and Neo4j:
+
+```
+docker compose -f compose.neo4j.yaml -f compose.chroma.yaml up -d
+```
+
+Then you will need some data to add to the vector store & graph database, this example fetches and parses data from a URL:
+
+```
+URL="https://en.wikipedia.org/wiki/Dinosaur" docker compose -f compose.embed-url.yaml up
+```
+
+Now that we have added some data you can use the enhanced query system to get more accurate information on the data you have added:
+
+```
+QUERY="What is a T-REX?" docker compose -f compose.query.yaml up
+```
+
+You re-run the last two commands with different `URL` and `QUERY` environment variables.
 
 ## Vector Stores
 
